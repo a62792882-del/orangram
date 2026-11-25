@@ -221,6 +221,21 @@ if(!/^[a-z0-9_]{3,24}$/.test(username)){
 }
   const avatar=$("profileAvatar").value.trim();
   const {error}=await db.from("profiles")
+  .update({
+    display_name:name,
+    username:username,
+    avatar_url:avatar||null
+  })
+  .eq("id",user.id);
+
+$("profileMsg").textContent=error
+  ? (error.code==="23505"?"Этот username уже занят.":"Ошибка: "+error.message)
+  : "Профиль сохранён! 🍊";
+
+if(!error){
+  await loadBalance();
+  await loadChats();
+}
     .update({display_name:name,avatar_url:avatar||null})
     .eq("id",user.id);
   $("profileMsg").textContent=error?error.message:"Профиль сохранён! 🍊";

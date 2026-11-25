@@ -213,6 +213,12 @@ $("closeProfile").onclick=()=>{
 
 $("saveProfile").onclick=async()=>{
   const name=$("profileName").value.trim();
+ const username=$("profileUsername").value.trim().toLowerCase();
+
+if(!/^[a-z0-9_]{3,24}$/.test(username)){
+  $("profileMsg").textContent="Username: 3–24 символа, только латинские буквы, цифры и _";
+  return;
+}
   const avatar=$("profileAvatar").value.trim();
   const {error}=await db.from("profiles")
     .update({display_name:name,avatar_url:avatar||null})

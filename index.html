@@ -186,7 +186,31 @@ async function loadMessages(){$("messages").innerHTML="";const {data,error}=awai
 $("sendBtn").onclick=sendMessage;$("messageInput").onkeydown=e=>{if(e.key==="Enter")sendMessage()};
 async function sendMessage(){const body=$("messageInput").value.trim();if(!body||!currentFriend)return;const {error}=await db.from("messages").insert({sender_id:user.id,recipient_id:currentFriend.id,body});if(error){alert(error.message);return}$("messageInput").value="";await loadChats()}
 $("backChats").onclick=()=>{$("chatView").classList.add("hidden");if(channel){db.removeChannel(channel);channel=null}currentFriend=null}
-$("logout").onclick=async()=>{await db.auth.signOut();location.reload()};
+$("profileBtn").onclick=async()=>{
+  $("profileView").classList.remove("hidden");
+  $("chatView").classList.add("hidden");
+  $("profileName").value=user.user_metadata?.display_name||"";
+  const {data}=await db.from("profiles")
+    .select("avatar_url")
+    .eq("id",user.id)
+    .maybeSingle();
+  $("profileAvatar").value=data?.avatar_url||"";
+};
+
+$("closeProfile").onclick=()=>{
+  $("profileView").classList.add("hidden");
+  $("chatView").classList.add("hidden");
+};
+
+$("saveProfile").onclick=async()=>{
+  const name=$("profileName").value.trim();
+  const avatar=$("profileAvatar").value.trim();
+  const {error}=await db.from("profiles")
+    .update({display_name:name,avatar_url:avatar||null})
+    .eq("id",user.id);
+  $("profileMsg").textContent=error?error.message:"Профиль сохранён! 🍊";
+};
+  $("logout").onclick=async()=>{await db.auth.signOut();location.reload()};
 (async()=>{if(configReady()){db=window.supabase.createClient(SUPABASE_URL,SUPABASE_ANON_KEY);const {data}=await db.auth.getSession();if(data.session){user=data.session.user;await showApp()}}})();
 </script>
 </body></html>

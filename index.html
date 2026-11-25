@@ -233,6 +233,37 @@ $("saveProfile").onclick=async()=>{
   const username=$("profileUsername").value.trim().toLowerCase();
   const avatar=$("profileAvatar").value.trim();
 
+  if(!name){
+    $("profileMsg").textContent="Введи имя.";
+    return;
+  }
+
+  if(!/^[a-z0-9_]{3,24}$/.test(username)){
+    $("profileMsg").textContent="Username: 3–24 символа, латинские буквы, цифры и _.";
+    return;
+  }
+
+  const {error}=await db.from("profiles")
+    .update({
+      display_name:name,
+      username:username,
+      avatar_url:avatar||null
+    })
+    .eq("id",user.id);
+
+  $("profileMsg").textContent=error
+    ? (error.code==="23505"?"Этот username уже занят.":"Ошибка: "+error.message)
+    : "Профиль сохранён! 🍊";
+
+  if(!error){
+    await loadBalance();
+    await loadChats();
+  }
+};
+  const name=$("profileName").value.trim();
+  const username=$("profileUsername").value.trim().toLowerCase();
+  const avatar=$("profileAvatar").value.trim();
+
   if(!/^[a-z0-9_]{3,24}$/.test(username)){
     $("profileMsg").textContent="Username: 3–24 символа, только латинские буквы, цифры и _";
     return;

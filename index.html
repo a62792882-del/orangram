@@ -34,7 +34,13 @@ a{color:#8bb8ff}
 <button id="authBtn" style="width:100%;margin-top:10px">Создать аккаунт</button><p id="authMsg" class="muted"></p>
 </section>
 <section id="app" class="hidden">
-<div class="row between"><h2>Чаты</h2><button id="logout" style="background:#34343b">Выйти</button></div>
+<div class="row between">
+  <h2>Чаты</h2>
+  <div>
+    <button id="profileBtn">Мой профиль</button>
+    <button id="logout">Выйти</button>
+  </div>
+</div>
 <div class="card"><h3>Найти друга</h3><div class="row"><input id="searchUser" placeholder="Введи точный юзернейм"><button id="searchBtn">Найти</button></div><div id="searchResult" class="muted"></div></div>
 <div class="card"><h3>Мои переписки</h3><div id="chatList" class="muted">Пока нет сообщений. Найди друга выше.</div></div>
 <section id="chatView" class="card hidden"><div class="row between"><div class="row"><div class="avatar">🍊</div><div><b id="chatName">Чат</b><div id="chatUsername" class="muted"></div></div></div><button id="backChats" style="background:#34343b">Назад</button></div><div id="messages"></div><div class="row"><input id="messageInput" placeholder="Сообщение..." style="margin:0"><button id="sendBtn">➤</button></div></section>

@@ -43,7 +43,17 @@ a{color:#8bb8ff}
 </div>
 <div class="card"><h3>Найти друга</h3><div class="row"><input id="searchUser" placeholder="Введи точный юзернейм"><button id="searchBtn">Найти</button></div><div id="searchResult" class="muted"></div></div>
 <div class="card"><h3>Мои переписки</h3><div id="chatList" class="muted">Пока нет сообщений. Найди друга выше.</div></div>
-<section id="chatView" class="card hidden"><div class="row between"><div class="row"><div class="avatar">🍊</div><div><b id="chatName">Чат</b><div id="chatUsername" class="muted"></div></div></div><button id="backChats" style="background:#34343b">Назад</button></div><div id="messages"></div><div class="row"><input id="messageInput" placeholder="Сообщение..." style="margin:0"><button id="sendBtn">➤</button></div></section>
+<div id="profileView" class="hidden card">
+  <h2>Мой профиль 🍊</h2>
+  <label>Имя</label>
+  <input id="profileName" placeholder="Твоё имя">
+  <label>Аватар (ссылка на картинку)</label>
+  <input id="profileAvatar" placeholder="https://...">
+  <button id="saveProfile">Сохранить</button>
+  <button id="closeProfile">Назад</button>
+  <p id="profileMsg"></p>
+</div>
+  <section id="chatView" class="card hidden"><div class="row between"><div class="row"><div class="avatar">🍊</div><div><b id="chatName">Чат</b><div id="chatUsername" class="muted"></div></div></div><button id="backChats" style="background:#34343b">Назад</button></div><div id="messages"></div><div class="row"><input id="messageInput" placeholder="Сообщение..." style="margin:0"><button id="sendBtn">➤</button></div></section>
 <p class="muted" style="font-size:12px">Демонстрационная ранняя версия. Не отправляй здесь конфиденциальную информацию.</p>
 </section>
 </main>

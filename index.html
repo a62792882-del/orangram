@@ -120,7 +120,50 @@ async function openSystemChat(){
     $("messages").append(el);
   });
 }
- async function loadChats(){const {data,error}=await db.from("messages").select("sender_id,recipient_id,created_at").or(`sender_id.eq.${user.id},recipient_id.eq.${user.id}`).order("created_at",{ascending:false}).limit(100);if(error)return;const ids=[...new Set((data||[]).map(x=>x.sender_id===user.id?x.recipient_id:x.sender_id))];$("chatList").innerHTML="";if(!ids.length){msg("chatList","Пока нет сообщений. Найди друга выше.");return}for(const id of ids){const {data:p}=await db.from("profiles").select("id,username,display_name").eq("id",id).maybeSingle();if(!p)continue;const el=document.createElement("div");el.className="chatrow row";el.innerHTML=`<div class="avatar">🍊</div><div><b></b><div class="muted"></div></div>`;el.querySelector("b").textContent=p.display_name;el.querySelector(".muted").textContent="@"+p.username;el.onclick=()=>openChat(p);$("chatList").append(el)}}
+ async function loadChats(){
+  const {data:systemData}=await db.from("system_messages")
+    .select("*")
+    .eq("recipient_id",user.id)
+    .order("created_at",{ascending:false})
+    .limit(1);
+
+  $("chatList").innerHTML="";
+
+  const systemChat=document.createElement("div");
+  systemChat.className="chatrow row";
+  systemChat.innerHTML=`<div class="avatar">🍊</div><div><b>Orangram</b><div class="muted">Официальный чат</div></div>`;
+  systemChat.onclick=()=>openSystemChat();
+  $("chatList").append(systemChat);
+
+  const {data,error}=await db.from("messages")
+    .select("sender_id,recipient_id,created_at")
+    .or(`sender_id.eq.${user.id},recipient_id.eq.${user.id}`)
+    .order("created_at",{ascending:false})
+    .limit(100);
+
+  if(error)return;
+
+  const ids=[...new Set((data||[]).map(x=>
+    x.sender_id===user.id?x.recipient_id:x.sender_id
+  ))];
+
+  for(const id of ids){
+    const {data:p}=await db.from("profiles")
+      .select("id,username,display_name")
+      .eq("id",id)
+      .maybeSingle();
+
+    if(!p)continue;
+
+    const el=document.createElement("div");
+    el.className="chatrow row";
+    el.innerHTML=`<div class="avatar">🍊</div><div><b></b><div class="muted"></div></div>`;
+    el.querySelector("b").textContent=p.display_name;
+    el.querySelector(".muted").textContent="@"+p.username;
+    el.onclick=()=>openChat(p);
+    $("chatList").append(el);
+  }
+}
 async function openChat(friend){currentFriend=friend;$("chatView").classList.remove("hidden");$("chatName").textContent=friend.display_name;$("chatUsername").textContent="@"+friend.username;await loadMessages();if(channel)db.removeChannel(channel);channel=db.channel("dm-"+[user.id,friend.id].sort().join("-")).on("postgres_changes",{event:"INSERT",schema:"public",table:"messages"},payload=>{const m=payload.new;if((m.sender_id===user.id&&m.recipient_id===friend.id)||(m.sender_id===friend.id&&m.recipient_id===user.id))renderMessage(m)}).subscribe()}
 function renderMessage(m){const el=document.createElement("div");el.className="bubble"+(m.sender_id===user.id?" mine":"");el.textContent=m.body;const t=document.createElement("div");t.className="small";t.textContent=new Date(m.created_at).toLocaleTimeString("ru-RU",{hour:"2-digit",minute:"2-digit"});el.append(t);$("messages").append(el);$("messages").scrollTop=$("messages").scrollHeight}
 async function loadMessages(){$("messages").innerHTML="";const {data,error}=await db.from("messages").select("*").or(`and(sender_id.eq.${user.id},recipient_id.eq.${currentFriend.id}),and(sender_id.eq.${currentFriend.id},recipient_id.eq.${user.id})`).order("created_at");if(error){const p=document.createElement("p");p.className="muted";p.textContent=error.message;$("messages").append(p);return}(data||[]).forEach(renderMessage)}

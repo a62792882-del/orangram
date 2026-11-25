@@ -191,6 +191,23 @@ $("backChats").onclick=()=>{$("chatView").classList.add("hidden");if(channel){db
 $("profileBtn").onclick=async()=>{
   $("profileView").classList.remove("hidden");
   $("chatView").classList.add("hidden");
+
+  const {data,error}=await db.from("profiles")
+    .select("username,display_name,avatar_url")
+    .eq("id",user.id)
+    .maybeSingle();
+
+  if(error){
+    $("profileMsg").textContent=error.message;
+    return;
+  }
+
+  $("profileName").value=data?.display_name||"";
+  $("profileUsername").value=data?.username||"";
+  $("profileAvatar").value=data?.avatar_url||"";
+};
+  $("profileView").classList.remove("hidden");
+  $("chatView").classList.add("hidden");
   const {data}=await db.from("profiles")
   .select("username,display_name,avatar_url")
   .eq("id",user.id)
